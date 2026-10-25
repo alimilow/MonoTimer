@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MonoTimer — Sequential & Simple Timer</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-theme="mono-light">
+  <div id="app" class="app-shell">
+    <!-- Custom Draggable Material 3 Window Header -->
+    <header class="titlebar" id="titlebar">
+      <div class="titlebar-drag" id="titlebarDrag">
+        <div class="brand-mark" aria-hidden="true">
+          <span class="brand-dot"></span>
+          <span class="brand-ring"></span>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">MonoTimer</span>
+          <span class="brand-subtitle" id="headerRoutineBadge">Secuencia Principal</span>
+        </div>
+      </div>
+
+      <div class="titlebar-actions">
+        <!-- Quick Language Switcher Pill -->
+        <button class="lang-pill-btn" id="btnLangToggle" title="Cambiar idioma / Switch language">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="2" y1="12" x2="22" y2="12" />
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+          </svg>
+          <span id="langCodeBadge">ES</span>
+        </button>
+
+        <button class="icon-btn" id="btnPalette" data-i18n-title="tt_palette" aria-label="Paleta de colores">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+            <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+            <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+            <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+            <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
+          </svg>
+        </button>
+
+        <button class="icon-btn" id="btnPinTop" data-i18n-title="tt_pin" aria-label="Siempre visible">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 17v5" />
+            <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z" />
+          </svg>
+        </button>
+
+        <button class="icon-btn" id="btnCompactMode" data-i18n-title="tt_compact" aria-label="Modo compacto">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="3" />
+            <rect x="11" y="11" width="7" height="7" rx="1.5" fill="currentColor" />
+          </svg>
+        </button>
+
+        <button class="icon-btn" id="btnSettings" data-i18n-title="tt_settings" aria-label="Configuración">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+        </button>
+
+        <div class="window-controls">
+          <button class="win-btn" id="btnMinimize" data-i18n-title="tt_minimize" aria-label="Minimizar">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+          <button class="win-btn win-btn-close" id="btnClose" data-i18n-title="tt_close" aria-label="Cerrar">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Material 3 Primary Mode Navigation Tabs (Secuencias vs Temporizador Simple) -->
+    <nav class="mode-tabs-bar" id="modeTabsBar" role="tablist" aria-label="Modo de temporizador">
+      <button type="button" class="mode-tab active" id="tabSequenceMode" role="tab" aria-selected="true" data-mode="sequence">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="8" y1="6" x2="21" y2="6" />
+          <line x1="8" y1="12" x2="21" y2="12" />
+          <line x1="8" y1="18" x2="21" y2="18" />
+          <line x1="3" y1="6" x2="3.01" y2="6" />
+          <line x1="3" y1="12" x2="3.01" y2="12" />
+          <line x1="3" y1="18" x2="3.01" y2="18" />
+        </svg>
+        <span data-i18n="tab_sequences">Secuencias</span>
+      </button>
+
+      <button type="button" class="mode-tab" id="tabSimpleMode" role="tab" aria-selected="false" data-mode="simple">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="13" r="8" />
+          <path d="M12 9v4l2 2" />
+          <path d="M9 2h6" />
+        </svg>
+        <span data-i18n="tab_simple">Temporizador Simple</span>
+      </button>
+    </nav>
+
+    <!-- COMPACT OVERLAY VIEW (Visible when Compact Mode is active) -->
+    <section class="compact-view" id="compactView" aria-label="Vista compacta">
+      <div class="compact-top-row">
+        <div class="compact-block-meta">
+          <span class="m3-chip chip-dark" id="compactStepPill">1 / 3</span>
+          <span class="compact-block-title" id="compactBlockName">Bloque 1</span>
+        </div>
+        <button class="icon-btn icon-btn-sm" id="btnExitCompact" data-i18n-title="tt_expand">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 3 21 3 21 9" />
+            <polyline points="9 21 3 21 3 15" />
+            <line x1="21" y1="3" x2="14" y2="10" />
+            <line x1="3" y1="21" x2="10" y2="14" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="compact-main-row">
+        <div class="compact-time-display" id="compactTimeDisplay">10:00</div>
+        <div class="compact-controls">
+          <button class="m3-fab-compact" id="btnCompactPlayPause" data-i18n-title="tt_play_pause">
+            <span id="compactPlayIcon"></span>
+          </button>
+          <button class="m3-tonal-btn-sm" id="btnCompactNext" data-i18n-title="tt_next_or_reset">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="compact-progress-track">
+        <div class="compact-progress-fill" id="compactProgressFill"></div>
+      </div>
+
+      <div class="compact-footer-row">
+        <span class="compact-next-label" id="compactNextLabel">Siguiente: Descanso (01:00)</span>
+        <span class="compact-hotkey-hint" data-i18n="compact_hk_hint">Alt+P Play · Alt+N Sig</span>
+      </div>
+    </section>
+
+    <!-- FULL STANDARD VIEW -->
+    <main class="main-content" id="mainContent">
+
+      <!-- ========================================================
+           VIEW 1: SEQUENTIAL TIMER (APARTADO DE SECUENCIAS)
+           ======================================================== -->
+      <div class="mode-panel" id="sequenceModePanel">
+        <!-- Routine Selector & Transition Bar -->
+        <section class="routine-bar m3-card-subtle">
+          <div class="routine-selector-group">
+            <label class="micro-label" for="routineSelect" data-i18n="lbl_active_sequence">SECUENCIA / RUTINA ACTIVA</label>
+            <div class="routine-select-row">
+              <select id="routineSelect" class="m3-select" aria-label="Seleccionar rutina"></select>
+              <button class="m3-icon-tonal" id="btnNewRoutine" data-i18n-title="tt_new_sequence">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </button>
+              <button class="m3-icon-tonal" id="btnEditRoutineMeta" data-i18n-title="tt_edit_sequence">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="transition-mode-row">
+            <span class="transition-label" data-i18n="lbl_when_block_ends">Al terminar bloque:</span>
+            <div class="segmented-control" role="group">
+              <button type="button" class="seg-btn active" id="segAuto" data-mode="auto" data-i18n="seg_auto">
+                Automático
+              </button>
+              <button type="button" class="seg-btn" id="segManual" data-mode="manual" data-i18n="seg_confirm">
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Hero Circular Timer Card -->
+        <section class="hero-timer-card m3-card-elevated" id="heroTimerCard">
+          <div class="timer-top-pills">
+            <span class="m3-chip chip-dark" id="stepCounterPill">Bloque 1 de 3</span>
+            <span class="m3-chip chip-outline" id="blockTypePill">ACTIVIDAD</span>
+            <span class="m3-chip chip-subtle" id="totalRemainingPill">Restante: 21:00</span>
+          </div>
+
+          <!-- Circular Progress & Countdown -->
+          <div class="timer-ring-container">
+            <svg class="timer-ring-svg" viewBox="0 0 260 260">
+              <circle class="ring-track-outer" cx="130" cy="130" r="118" />
+              <circle class="ring-track" cx="130" cy="130" r="108" />
+              <circle class="ring-progress" id="ringProgress" cx="130" cy="130" r="108" />
+            </svg>
+
+            <div class="timer-center-content">
+              <div class="current-block-name" id="currentBlockName">Bloque 1</div>
+              <div class="time-readout" id="timeReadout" aria-live="polite">10:00</div>
+              <div class="timer-status-caption" id="timerStatusCaption">Listo para iniciar</div>
+            </div>
+          </div>
+
+          <!-- Confirmation Alert Banner -->
+          <div class="confirm-banner hidden" id="confirmBanner">
+            <div class="confirm-banner-text">
+              <strong data-i18n="banner_block_done">¡Bloque completado!</strong>
+              <span id="confirmNextText">Presiona Continuar o Alt+P cuando estés listo</span>
+            </div>
+          </div>
+
+          <!-- Material 3 Expressive Controls -->
+          <div class="timer-controls-row">
+            <button class="m3-btn-tonal-circle" id="btnResetBlock" data-i18n-title="tt_reset_block" aria-label="Reiniciar bloque">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                <path d="M3 3v5h5" />
+              </svg>
+            </button>
+
+            <button class="m3-btn-primary-hero" id="btnPlayPause" aria-label="Iniciar o Pausar">
+              <span class="hero-btn-icon" id="playPauseIcon"></span>
+              <span class="hero-btn-label" id="playPauseLabel">Iniciar</span>
+            </button>
+
+            <button class="m3-btn-tonal-circle" id="btnNextBlock" data-i18n-title="tt_next_block" aria-label="Siguiente bloque">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Quick time adjustment chips -->
+          <div class="quick-adjust-row">
+            <button class="chip-action" id="btnMinus15s">-15s</button>
+            <button class="chip-action" id="btnPlus30s">+30s</button>
+            <button class="chip-action" id="btnPlus1m">+1m</button>
+            <button class="chip-action" id="btnResetRoutine" data-i18n="btn_reset_all">Reiniciar todo</button>
+          </div>
+        </section>
+
+        <!-- Sequence Timeline Section -->
+        <section class="sequence-section">
+          <div class="sequence-header">
+            <div>
+              <h2 class="section-title" data-i18n="sec_blocks_title">Secuencia de Bloques</h2>
+              <p class="section-subtitle" id="sequenceSummaryText">3 bloques · 21 min en total</p>
+            </div>
+            <div class="sequence-quick-add">
+              <button class="m3-btn-outlined-sm" id="btnQuickAdd10m">+ 10m</button>
+              <button class="m3-btn-outlined-sm" id="btnQuickAdd1m">+ 1m</button>
+              <button class="m3-btn-filled-sm" id="btnAddCustomBlock">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                <span data-i18n="btn_add_block">Bloque</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="blocks-list" id="blocksList" role="list"></div>
+        </section>
+      </div>
+
+      <!-- ========================================================
+           VIEW 2: SIMPLE SINGLE TIMER (APARTADO TEMPORIZADOR SIMPLE)
+           ======================================================== -->
+      <div class="mode-panel hidden" id="simpleModePanel">
+        <!-- Hero Card for Simple Timer -->
+        <section class="hero-timer-card m3-card-elevated">
+          <div class="timer-top-pills">
+            <span class="m3-chip chip-dark" data-i18n="chip_simple_timer">TEMPORIZADOR SIMPLE</span>
+            <button type="button" class="m3-chip chip-toggle" id="btnSimpleLoopToggle">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="17 1 21 5 17 9" />
+                <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                <polyline points="7 23 3 19 7 15" />
+                <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+              </svg>
+              <span id="simpleLoopText">Repetir: No</span>
+            </button>
+          </div>
+
+          <!-- Circular Ring for Simple Timer -->
+          <div class="timer-ring-container">
+            <svg class="timer-ring-svg" viewBox="0 0 260 260">
+              <circle class="ring-track-outer" cx="130" cy="130" r="118" />
+              <circle class="ring-track" cx="130" cy="130" r="108" />
+              <circle class="ring-progress" id="simpleRingProgress" cx="130" cy="130" r="108" />
+            </svg>
+
+            <div class="timer-center-content">
+              <input
+                type="text"
+                class="simple-label-inline"
+                id="simpleLabelInput"
+                maxlength="36"
+                data-i18n-placeholder="ph_simple_label"
+                placeholder="Etiqueta opcional..."
+              />
+              <div class="time-readout" id="simpleTimeReadout" aria-live="polite">05:00</div>
+              <div class="timer-status-caption" id="simpleStatusCaption">Listo para iniciar</div>
+            </div>
+          </div>
+
+          <!-- Controls for Simple Timer -->
+          <div class="timer-controls-row">
+            <button class="m3-btn-tonal-circle" id="btnSimpleReset" data-i18n-title="tt_reset_block" aria-label="Reiniciar">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                <path d="M3 3v5h5" />
+              </svg>
+            </button>
+
+            <button class="m3-btn-primary-hero" id="btnSimplePlayPause" aria-label="Iniciar o Pausar">
+              <span class="hero-btn-icon" id="simplePlayPauseIcon"></span>
+              <span class="hero-btn-label" id="simplePlayPauseLabel">Iniciar</span>
+            </button>
+
+            <button class="m3-btn-tonal-circle" id="btnSimplePlus1mCircle" title="+1 min" aria-label="+1 min">
+              <span style="font-size:12.5px;font-weight:800;">+1m</span>
+            </button>
+          </div>
+
+          <!-- Quick time adjustments for Simple Timer -->
+          <div class="quick-adjust-row">
+            <button class="chip-action" id="btnSimpleMinus15s">-15s</button>
+            <button class="chip-action" id="btnSimplePlus30s">+30s</button>
+            <button class="chip-action" id="btnSimplePlus1m">+1m</button>
+            <button class="chip-action" id="btnSimplePlus5m">+5m</button>
+          </div>
+        </section>
+
+        <!-- Duration Setup & Presets Card -->
+        <section class="m3-card-subtle simple-setup-card">
+          <div class="simple-setup-header">
+            <span class="micro-label" data-i18n="lbl_configure_duration">DURACIÓN DEL TEMPORIZADOR</span>
+          </div>
+
+          <div class="simple-time-inputs-row">
+            <div class="time-spinner-box">
+              <label for="simpleInputHours" data-i18n="lbl_hours">Horas</label>
+              <input type="number" id="simpleInputHours" class="m3-input time-num-input" min="0" max="23" value="0" />
+            </div>
+            <span class="time-colon">:</span>
+            <div class="time-spinner-box">
+              <label for="simpleInputMinutes" data-i18n="lbl_minutes">Minutos</label>
+              <input type="number" id="simpleInputMinutes" class="m3-input time-num-input" min="0" max="59" value="5" />
+            </div>
+            <span class="time-colon">:</span>
+            <div class="time-spinner-box">
+              <label for="simpleInputSeconds" data-i18n="lbl_seconds">Segundos</label>
+              <input type="number" id="simpleInputSeconds" class="m3-input time-num-input" min="0" max="59" value="0" />
+            </div>
+          </div>
+
+          <div class="simple-presets-label" data-i18n="lbl_quick_presets">Ajustes rápidos</div>
+          <div class="simple-presets-grid" id="simplePresetsGrid">
+            <button type="button" class="preset-pill simple-preset" data-sec="60">1 min</button>
+            <button type="button" class="preset-pill simple-preset" data-sec="180">3 min</button>
+            <button type="button" class="preset-pill simple-preset" data-sec="300">5 min</button>
+            <button type="button" class="preset-pill simple-preset" data-sec="600">10 min</button>
+            <button type="button" class="preset-pill simple-preset" data-sec="900">15 min</button>
+            <button type="button" class="preset-pill simple-preset" data-sec="1200">20 min</button>
+            <button type="button" class="preset-pill simple-preset" data-sec="1500">25 min</button>
+            <button type="button" class="preset-pill simple-preset" data-sec="1800">30 min</button>
+            <button type="button" class="preset-pill simple-preset" data-sec="2700">45 min</button>
+            <button type="button" class="preset-pill simple-preset" data-sec="3600">60 min</button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Hotkey Footer Pill -->
+      <footer class="hotkey-footer">
+        <div class="hotkey-pill">
+          <span class="hk-badge">Alt + P</span> <span data-i18n="hk_play_pause">Play/Pausa</span>
+          <span class="hk-sep">·</span>
+          <span class="hk-badge">Alt + N</span> <span data-i18n="hk_next">Siguiente</span>
+          <span class="hk-sep">·</span>
+          <span class="hk-badge">Alt + R</span> <span data-i18n="hk_reset">Reiniciar</span>
+          <span class="hk-sep">·</span>
+          <span class="hk-badge">Alt + M</span> <span data-i18n="hk_mini">Mini</span>
+        </div>
+      </footer>
+    </main>
+
+    <!-- DIALOG: Color Palettes / Themes -->
+    <dialog class="m3-dialog" id="paletteDialog">
+      <div class="dialog-Surface">
+        <div class="dialog-header-row">
+          <h3 class="dialog-title" data-i18n="dlg_palette_title">Paleta de Colores</h3>
+          <span class="dialog-subtitle" data-i18n="dlg_palette_sub">Estilo Material UI</span>
+        </div>
+
+        <div class="palette-grid" id="paletteGrid" role="radiogroup" aria-label="Paletas de colores"></div>
+
+        <div class="dialog-actions">
+          <button type="button" class="m3-btn-filled" id="btnClosePaletteDialog" data-i18n="btn_done">Listo</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- DIALOG: Add / Edit Block -->
+    <dialog class="m3-dialog" id="blockDialog">
+      <form method="dialog" class="dialog-Surface" id="blockForm">
+        <h3 class="dialog-title" id="blockDialogTitle">Editar Bloque</h3>
+
+        <div class="form-field">
+          <label for="inputBlockName" data-i18n="lbl_block_name">Nombre del bloque</label>
+          <input type="text" id="inputBlockName" class="m3-input" data-i18n-placeholder="ph_block_name" placeholder="Ej. Estudio, Trabajo, Serie 1, Descanso..." required maxlength="60" />
+        </div>
+
+        <div class="form-row-2col">
+          <div class="form-field">
+            <label for="inputBlockMinutes" data-i18n="lbl_minutes">Minutos</label>
+            <input type="number" id="inputBlockMinutes" class="m3-input" min="0" max="240" value="10" required />
+          </div>
+          <div class="form-field">
+            <label for="inputBlockSeconds" data-i18n="lbl_seconds">Segundos</label>
+            <input type="number" id="inputBlockSeconds" class="m3-input" min="0" max="59" value="0" required />
+          </div>
+        </div>
+
+        <div class="preset-duration-pills">
+          <button type="button" class="preset-pill block-preset" data-min="1" data-sec="0">1 min</button>
+          <button type="button" class="preset-pill block-preset" data-min="5" data-sec="0">5 min</button>
+          <button type="button" class="preset-pill block-preset" data-min="10" data-sec="0">10 min</button>
+          <button type="button" class="preset-pill block-preset" data-min="15" data-sec="0">15 min</button>
+          <button type="button" class="preset-pill block-preset" data-min="25" data-sec="0">25 min</button>
+        </div>
+
+        <div class="form-field">
+          <label for="inputBlockType" data-i18n="lbl_block_category">Tipo o categoría del bloque</label>
+          <select id="inputBlockType" class="m3-select">
+            <option value="activity" data-i18n="opt_type_activity">Actividad / Bloque Principal</option>
+            <option value="focus" data-i18n="opt_type_focus">Enfoque / Estudio / Trabajo</option>
+            <option value="exercise" data-i18n="opt_type_exercise">Ejercicio / Entrenamiento</option>
+            <option value="rest" data-i18n="opt_type_rest">Descanso / Pausa</option>
+            <option value="prep" data-i18n="opt_type_prep">Preparación / Transición</option>
+            <option value="custom" data-i18n="opt_type_custom">Personalizado (Escribir etiqueta propia)</option>
+          </select>
+        </div>
+
+        <div class="form-field hidden" id="customTagField">
+          <label for="inputCustomTag" data-i18n="lbl_custom_tag">Etiqueta personalizada</label>
+          <input type="text" id="inputCustomTag" class="m3-input" data-i18n-placeholder="ph_custom_tag" placeholder="Ej. Lectura, Cocina, Reunión..." maxlength="24" />
+        </div>
+
+        <div class="form-field">
+          <label for="inputBlockTransition" data-i18n="lbl_block_transition">Al terminar este bloque</label>
+          <select id="inputBlockTransition" class="m3-select">
+            <option value="inherit" data-i18n="opt_trans_inherit">Usar ajuste general de la secuencia</option>
+            <option value="auto" data-i18n="opt_trans_auto">Avanzar automáticamente al siguiente</option>
+            <option value="manual" data-i18n="opt_trans_manual">Pausar y esperar mi confirmación (Alt+P)</option>
+          </select>
+        </div>
+
+        <div class="dialog-actions">
+          <button type="button" class="m3-btn-text" id="btnCancelBlockDialog" data-i18n="btn_cancel">Cancelar</button>
+          <button type="submit" class="m3-btn-filled" data-i18n="btn_save_block">Guardar bloque</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- DIALOG: New / Edit Routine -->
+    <dialog class="m3-dialog" id="routineDialog">
+      <form method="dialog" class="dialog-Surface" id="routineForm">
+        <h3 class="dialog-title" id="routineDialogTitle">Nueva Secuencia</h3>
+
+        <div class="form-field">
+          <label for="inputRoutineName" data-i18n="lbl_sequence_name">Nombre de la secuencia o rutina</label>
+          <input type="text" id="inputRoutineName" class="m3-input" data-i18n-placeholder="ph_sequence_name" placeholder="Ej. Pomodoro Estudio, Entrenamiento, Rutina Diaria..." required maxlength="50" />
+        </div>
+
+        <div class="dialog-actions dialog-actions-spread">
+          <button type="button" class="m3-btn-danger-outline hidden" id="btnDeleteRoutine" data-i18n="btn_delete">Eliminar</button>
+          <div class="dialog-actions-right">
+            <button type="button" class="m3-btn-text" id="btnCancelRoutineDialog" data-i18n="btn_cancel">Cancelar</button>
+            <button type="submit" class="m3-btn-filled" data-i18n="btn_save">Guardar</button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- DIALOG: Audio, Language & Hotkeys Settings -->
+    <dialog class="m3-dialog" id="settingsDialog">
+      <form method="dialog" class="dialog-Surface" id="settingsForm">
+        <h3 class="dialog-title" data-i18n="dlg_settings_title">Ajustes, Idioma y Sonido</h3>
+
+        <div class="form-field">
+          <label for="selectLanguage" data-i18n="lbl_language">Idioma de la aplicación / Language</label>
+          <select id="selectLanguage" class="m3-select">
+            <option value="es">Español (ES)</option>
+            <option value="en">English (EN)</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label for="selectSoundProfile" data-i18n="lbl_sound_profile">Tono de alerta al terminar</label>
+          <div class="sound-select-row">
+            <select id="selectSoundProfile" class="m3-select">
+              <option value="material" data-i18n="snd_material">Campana Armónica Material (Recomendado)</option>
+              <option value="competitive" data-i18n="snd_pulse">Doble Pulso de Alta Claridad</option>
+              <option value="digital" data-i18n="snd_crystal">Cristal Minimalista</option>
+              <option value="soft" data-i18n="snd_soft">Acorde Suave</option>
+            </select>
+            <button type="button" class="m3-btn-outlined-sm" id="btnTestSound" data-i18n="btn_test_sound">Probar</button>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <div class="slider-header">
+            <label for="inputVolume" data-i18n="lbl_volume">Volumen de alertas</label>
+            <span id="volumeValueLabel">85%</span>
+          </div>
+          <input type="range" id="inputVolume" class="m3-slider" min="0" max="100" value="85" />
+        </div>
+
+        <label class="m3-switch-row" for="chkCountdownBeep">
+          <div class="switch-text">
+            <strong data-i18n="sw_countdown_title">Bips en los últimos 3 segundos (3, 2, 1)</strong>
+            <span data-i18n="sw_countdown_desc">Te avisa justo antes de que termine el tiempo</span>
+          </div>
+          <input type="checkbox" id="chkCountdownBeep" checked />
+        </label>
+
+        <label class="m3-switch-row" for="chkRepeatConfirmAlert">
+          <div class="switch-text">
+            <strong data-i18n="sw_reminder_title">Recordatorio sonoro en espera de confirmación</strong>
+            <span data-i18n="sw_reminder_desc">Suena un pulso suave cada 8s si espera que confirmes</span>
+          </div>
+          <input type="checkbox" id="chkRepeatConfirmAlert" checked />
+        </label>
+
+        <label class="m3-switch-row" for="chkGlobalHotkeys">
+          <div class="switch-text">
+            <strong data-i18n="sw_hotkeys_title">Atajos de teclado globales en Windows 11</strong>
+            <span data-i18n="sw_hotkeys_desc">Permite usar Alt+P, Alt+N, Alt+R y Alt+M desde cualquier app</span>
+          </div>
+          <input type="checkbox" id="chkGlobalHotkeys" checked />
+        </label>
+
+        <div class="about-card" style="margin-top: 4px; padding: 10px 12px; background: var(--md-surface-low); border-radius: 12px; border: 1px solid var(--md-outline-subtle); display: flex; flex-direction: column; gap: 2px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong style="font-size: 12px; color: var(--md-text-main);">MonoTimer v1.0.0</strong>
+            <span style="font-size: 11px; color: var(--md-text-muted);">Windows 11</span>
+          </div>
+          <span style="font-size: 11px; color: var(--md-text-secondary);" data-i18n="about_credit">Creado para entrenamiento, estudio y productividad</span>
+        </div>
+
+        <div class="dialog-actions">
+          <button type="submit" class="m3-btn-filled" data-i18n="btn_done">Listo</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Toast notification -->
+    <div class="m3-snackbar" id="snackbar" role="status" aria-live="polite"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
