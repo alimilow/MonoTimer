@@ -1,2 +1,2 @@
 @echo off
-start "" "%~dp0dist\KovaaksSequentialTimer.exe"
+start "" "%~dp0dist\MonoTimer.exe"

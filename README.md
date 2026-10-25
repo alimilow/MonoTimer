@@ -48,11 +48,11 @@
 
 ### Compilar desde la terminal
 ```powershell
-dotnet build KovaaksTimer.csproj -c Release -o dist
+dotnet build MonoTimer.csproj -c Release -o dist
 ```
 
 ### Ejecutar
-Puedes ejecutar directamente `dist/KovaaksSequentialTimer.exe` o usar el script:
+Puedes ejecutar directamente `dist/MonoTimer.exe` o usar el script:
 ```powershell
 .\Iniciar-MonoTimer.bat
 ```

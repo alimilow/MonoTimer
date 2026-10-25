@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
 
-namespace KovaaksSequentialTimer
+namespace MonoTimer
 {
     internal static class Program
     {
@@ -133,7 +133,7 @@ namespace KovaaksSequentialTimer
             {
                 string userDataFolder = Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    "KovaaksSequentialTimer",
+                    "MonoTimer",
                     "WebView2Data"
                 );
 
@@ -156,13 +156,13 @@ namespace KovaaksSequentialTimer
                 }
 
                 _webView.CoreWebView2.SetVirtualHostNameToFolderMapping(
-                    "app.kovaakstimer.local",
+                    "app.monotimer.local",
                     uiFolder,
                     CoreWebView2HostResourceAccessKind.Allow
                 );
 
                 _webView.CoreWebView2.WebMessageReceived += OnWebMessageReceived;
-                _webView.CoreWebView2.Navigate("https://app.kovaakstimer.local/index.html");
+                _webView.CoreWebView2.Navigate("https://app.monotimer.local/index.html");
             }
             catch (Exception ex)
             {
